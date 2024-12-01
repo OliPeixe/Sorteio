@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Sorteio</title>
+</head>
+<style>
+    body{
+        background-color: rgb(212, 206, 92);
+    }
+
+</style>
+<body>
+    <center>
+        <table>
+        <tr>
+            <th>
+                <label for="credito">Crédito:</label>
+                <input id="credito" readonly="true" value="10">
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <button onclick="charge()">Carregar 1 crédito</button>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <label for="aposta">Montante a apostar:</label>
+                <input id="aposta" type="number" min="1">
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <label for="input">Tenta adivinhar o número!</label>
+                <input id="input" type="number" min="1" max="10">
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <button onclick="hint(0)">Dica (menos 10% de retorno)</button>
+                <input id="hint" type="checkbox" disabled>
+             </th>
+        </tr>
+        <tr>
+            <th>
+                <button onclick="compare()">Apostar</button>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <label for="output">O último número sorteado foi:</label>
+                <input id="output" readonly="true">
+            </th>
+        </tr>
+        <tr>
+            <th>
+            <p id="answer"></p>
+            <p id="sf"></p>    
+            </th>
+        </tr>
+        </table>
+        <button onclick="document.location='./home.html'">Regressar ao tutorial</button>
+    </center>
+    <script>
+        document.getElementById("hint").checked=false
+        function charge () {                            //Carrega um crédtio
+            document.getElementById("credito").value ++
+        }
+        function hint (y) {
+            credito = parseInt(document.getElementById("credito").value)    
+            aposta = parseInt(document.getElementById("aposta").value)
+            if (aposta>credito) {                                               // Se não houver credito é impossivel jogar
+                document.getElementById("answer").innerText = "Não tem crédito suficiente para fazer a aposta!"
+            } else {
+                if (document.getElementById("hint").checked==false && y == 0) { // Se for o botão a chamar a função e se ainda não tiver sido dada uma dica,
+                    x = Math.floor(Math.random()*10+1)                          // é criado número secreto e é dado o sinal de que a dica foi usads
+                    document.getElementById("hint").checked=true
+                    if (x<=5) {                             //A dica é apenas uma ajuda a saber se o número secreto é menor ou igual, ou maior do que cinco
+                        document.getElementById("answer").innerText = "O número é menor ou igual a 5."
+                    } else {
+                        document.getElementById("answer").innerText = "O número é maior a 5."
+                    }
+                } else if (y == 1){                                             // Caso seja a função compare() a chamar esta função, ela apenas retorna o número
+                    return x                                                    // secreto, uma vez que já tinha sido criado quando se pediu uma dica
+                }
+            }
+        }
+        function compare () {
+            var credito, aposta, input, gain, x                             
+            credito = parseInt(document.getElementById("credito").value)    
+            aposta = parseInt(document.getElementById("aposta").value)
+            input = document.getElementById("input").value
+            if (document.getElementById("hint").checked==false) {
+                x = Math.floor(Math.random()*10+1)                          // Se não tiver sido dada uma dica, esta função cria o seu número secreto
+            } else {
+                x = hint(1)                                                 // Caso uma dica tenha sido dada, a função chama a função hint() para lhe returnar
+            }                                                               // o número secreto
+            if (aposta>credito) {                                           // Se não houver credito é impossivel jogar
+                document.getElementById("answer").innerText = "Não tem crédito suficiente para fazer a aposta!"
+            } else {
+                document.getElementById("credito").value = credito - aposta // É retirado o valor da aposta ao crédito
+                if (x==input && document.getElementById("hint").checked){   // Se o jogador acertou no número secreto, e se usou a dica apenas recebe 9 vezes
+                    gain=aposta*9                                           // o que apostou, ou seja, menos 10%
+                    document.getElementById("credito").value = credito + gain   // É adicionado o valor ganho ao crédtio
+                    document.getElementById("answer").innerText = "Acertaste! Recebes "+gain+"."
+                    document.body.style.backgroundColor="green" 
+                } else if (x==input){                                       // Se o jogador apenas acertou no número, ou seja, não usou a dica recebe 10 vezes o que apostou
+                    gain=aposta*10
+                    document.getElementById("credito").value = credito + gain   // É adicionado o valor ganho ao crédtio
+                    document.getElementById("answer").innerText = "Acertaste! Recebes "+gain+"."
+                    document.body.style.backgroundColor="green"
+                } else {                                                    // Caso perca, o jogador não recebe prémio
+                    document.getElementById("answer").innerText = "Perdeste!"
+                    document.body.style.backgroundColor="red"
+                }
+                document.getElementById("output").value = x                 // O número secreto é revelado
+                document.getElementById("hint").checked=false               // A dica é reposta como não usada, o jogo está pronto para ser jogado novamente
+            }
+        }
+    </script>
+</body>
+</html>
